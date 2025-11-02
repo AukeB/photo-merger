@@ -5,7 +5,7 @@ import yaml
 from pathlib import Path
 from pydantic import BaseModel, ConfigDict
 
-from src.my_project.constants import CONFIG_PATH
+from src.photo_merger.constants import CONFIG_PATH
 
 
 class ConfiguredBaseModel(BaseModel):

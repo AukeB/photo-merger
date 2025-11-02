@@ -1,3 +1,3 @@
 # Template repository
 
-This is template repository that can be used for starting other repositories.
+Merge photos from multiple directories chronologically into a single directory by extracting metdata

@@ -1,7 +1,7 @@
 [project]
-name = "template-repo"
+name = "photo-merger"
 version = "0.1.0"
-description = "Add your description here"
+description = "Merge photos from multiple directories chronologically into a single directory by extracting metdata"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

@@ -2,7 +2,7 @@
 
 import yaml
 
-from src.my_project.config_manager import ConfigManager
+from src.photo_merger.config_manager import ConfigManager
 
 def main():
     # Load configuration manager and settings.

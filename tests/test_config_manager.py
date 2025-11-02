@@ -1,7 +1,7 @@
 """Module for testing config_manager.py"""
 
 
-from src.my_project.config_manager import ConfigModel
+from src.photo_merger.config_manager import ConfigModel
 
 
 def test_load_config_file(mock_config):
