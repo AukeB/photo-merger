@@ -89,7 +89,7 @@ class PhotoMerger:
             logger.error("❌ Failed to read EXIF metadata from %s: %s", image_path, e)
             return None
 
-    def _extract_datetime_from_filename(self, image_path: Path) -> str | None:
+    def _extract_datetime_from_file_name(self, image_path: Path) -> str | None:
         """
         Extracts a datetime from the filename and formats it as a string.
 
@@ -108,7 +108,7 @@ class PhotoMerger:
         formatted_datetime = match.group(1).replace("-", "_")
         return formatted_datetime
 
-    def _generate_new_filenames(self, image_file_paths: list[Path]) -> dict[Path, str]:
+    def _generate_new_file_names(self, image_file_paths: list[Path]) -> dict[Path, str]:
         """
         Generates new filenames for each image based on datetime and subdirectories.
 
@@ -126,7 +126,7 @@ class PhotoMerger:
             datetime_str = self._extract_metadata(image_path=img_file_path)
 
             if not datetime_str:
-                datetime_str = self._extract_datetime_from_filename(
+                datetime_str = self._extract_datetime_from_file_name(
                     image_path=img_file_path
                 )
 
@@ -146,22 +146,50 @@ class PhotoMerger:
 
             # Combine datetime, s ubdirectories, and extension into new filename.
             if subdirs_formatted:
-                new_filename = f"{datetime_str}_{subdirs_formatted}{ext}"
+                new_file_name = f"{datetime_str}_{subdirs_formatted}{ext}"
             else:
-                new_filename = f"{datetime_str}{ext}"
+                new_file_name = f"{datetime_str}{ext}"
 
-            image_rename_mapping[img_file_path] = new_filename
+            image_rename_mapping[img_file_path] = new_file_name
 
         return image_rename_mapping
 
-    def copy_and_rename_images(self, image_rename_mapping: dict[Path, str]) -> None:
+    def _resolve_duplicate_output_file_paths(
+        self, image_rename_mapping: dict[Path, str]
+    ) -> dict[Path, str]:
+        """
+        Ensures all output filenames are unique by appending a counter to duplicates.
+
+        Args:
+            image_rename_mapping (dict[Path, str]): Mapping from original Path to proposed new
+                filename.
+
+        Returns:
+            dict[Path, str]: Updated mapping with all filenames unique.
+        """
+        new_mapping: dict[Path, str] = {}
+        file_name_counts: dict[str, int] = {}
+
+        for original_path, new_file_name in image_rename_mapping.items():
+            count = file_name_counts.get(new_file_name, 0)
+
+            if count > 0:
+                name, ext = new_file_name.rsplit(".", 1)
+                new_file_name = f"{name}_{count:03}.{ext}"
+
+            new_mapping[original_path] = new_file_name
+            file_name_counts[image_rename_mapping[original_path]] = count + 1
+
+        return new_mapping
+
+    def _copy_and_rename_images(self, image_rename_mapping: dict[Path, str]) -> None:
         """
         Copies images to the merged output folder using new filenames.
         """
         self.output_directory_path.mkdir(exist_ok=True)
 
-        for original_path, new_filename in image_rename_mapping.items():
-            new_path = self.output_directory_path / new_filename
+        for original_path, new_file_name in image_rename_mapping.items():
+            new_path = self.output_directory_path / new_file_name
             shutil.copy2(original_path, new_path)
 
         logger.info(
@@ -220,10 +248,14 @@ class PhotoMerger:
         """ """
         image_file_paths = self._obtain_image_file_paths()
 
-        image_rename_mapping: dict[Path, str] = self._generate_new_filenames(
+        image_rename_mapping: dict[Path, str] = self._generate_new_file_names(
             image_file_paths=image_file_paths
         )
 
-        self.copy_and_rename_images(image_rename_mapping=image_rename_mapping)
+        image_rename_mapping = self._resolve_duplicate_output_file_paths(
+            image_rename_mapping=image_rename_mapping
+        )
+
+        self._copy_and_rename_images(image_rename_mapping=image_rename_mapping)
 
         self._verify_merge()
