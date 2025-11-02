@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__)
 
 
 class PhotoMerger:
-    """Handles image collection and filtering based on allowed file extensions.
+    """
+    Handles image collection and filtering based on allowed file extensions.
 
     Attributes:
         root_directory (Path): Root directory to search for images.
@@ -22,13 +23,13 @@ class PhotoMerger:
     """
 
     def __init__(self, root_directory: Path, config: ConfigModel) -> None:
-        """Initializes the PhotoMerger with the given directory and configuration.
+        """
+        Initializes the PhotoMerger with the given directory and configuration.
 
         Args:
             root_directory (Path): Path to the root directory containing subfolders.
             config (ConfigModel): Configuration model containing allowed extensions.
         """
-        # Variables.
         self.root_directory = root_directory
         self.allowed_image_extensions: list[str] = config.allowed_image_extensions
         self.output_directory_path = (
@@ -36,11 +37,9 @@ class PhotoMerger:
             / f"{root_directory.name}{config.output_directory_name_suffix}"
         )
 
-        # Actions.
-        self.output_directory_path.mkdir(exist_ok=True)
-
     def _obtain_image_file_paths(self) -> list[Path]:
-        """Recursively searches for image files with allowed extensions.
+        """
+        Recursively searches for image files with allowed extensions.
 
         Returns:
             list[Path]: List of valid image file paths found within all subdirectories.
@@ -51,11 +50,12 @@ class PhotoMerger:
             if path.suffix.lower() in self.allowed_image_extensions
         ]
 
-        logger.info("Found %d image files.", len(image_file_paths))
+        logger.info("✅ Found %d image files.", len(image_file_paths))
         return image_file_paths
 
     def _extract_metadata(self, image_path: Path) -> str | None:
-        """Extracts the EXIF 'DateTime' or 'DateTimeOriginal' from an image.
+        """
+        Extracts the EXIF 'DateTime' or 'DateTimeOriginal' from an image.
 
         Args:
             image_path (Path): Path to the image file.
@@ -86,11 +86,12 @@ class PhotoMerger:
                 return formatted_datetime
 
         except Exception as e:
-            logger.error("Failed to read EXIF metadata from %s: %s", image_path, e)
+            logger.error("❌ Failed to read EXIF metadata from %s: %s", image_path, e)
             return None
 
     def _extract_datetime_from_filename(self, image_path: Path) -> str | None:
-        """Extracts a datetime from the filename and formats it as a string.
+        """
+        Extracts a datetime from the filename and formats it as a string.
 
         Args:
             image_path (Path): Path to the image file.
@@ -131,7 +132,7 @@ class PhotoMerger:
 
             if not datetime_str:
                 logger.warning(
-                    "No datetime found for image %s; using empty string as fallback.",
+                    "⚠️ No datetime found for image %s; using empty string as fallback.",
                     img_file_path,
                 )
                 datetime_str = ""
@@ -143,7 +144,7 @@ class PhotoMerger:
             )
             ext = img_file_path.suffix.lower()
 
-            # Combine datetime, subdirectories, and extension into new filename.
+            # Combine datetime, s ubdirectories, and extension into new filename.
             if subdirs_formatted:
                 new_filename = f"{datetime_str}_{subdirs_formatted}{ext}"
             else:
@@ -163,10 +164,58 @@ class PhotoMerger:
             shutil.copy2(original_path, new_path)
 
         logger.info(
-            "Copied and renamed %d images to %s",
+            "✅ Copied and renamed %d images to %s",
             len(image_rename_mapping),
             self.output_directory_path,
         )
+
+    def _verify_merge(self) -> None:
+        """
+        Verifies that all images were copied to the merged folder correctly.
+
+        Prints the number of images per subdirectory, total images in all subdirs,
+        and the total number of images in the merged directory. Asserts equality.
+        """
+        self.output_directory_path.mkdir(exist_ok=True)
+
+        logger.info("=== Image count per subdirectory ===")
+        total_original = 0
+        for subdir in self.root_directory.rglob("*"):
+            if subdir.is_dir():
+                count = sum(
+                    1
+                    for path in subdir.iterdir()
+                    if path.suffix.lower() in self.allowed_image_extensions
+                )
+                if count > 0:
+                    logger.info(f"{subdir.relative_to(self.root_directory)}: {count}")
+                    total_original += count
+
+        # Include images directly in the root directory
+        root_count = sum(
+            1
+            for path in self.root_directory.iterdir()
+            if path.is_file() and path.suffix.lower() in self.allowed_image_extensions
+        )
+        if root_count > 0:
+            logger.info(f"(root): {root_count}")
+            total_original += root_count
+
+        logger.info(f"Total images in all subdirectories: {total_original}")
+
+        # Count images in the merged directory
+        total_merged = sum(
+            1
+            for path in self.output_directory_path.iterdir()
+            if path.is_file() and path.suffix.lower() in self.allowed_image_extensions
+        )
+        logger.info(f"Total images in merged directory: {total_merged}")
+
+        # Assert equality
+        assert total_original == total_merged, (
+            "❌ Mismatch between original and merged image counts"
+        )
+        print("✅ Merge verification passed: all images copied successfully.")
 
     def merge(self) -> None:
         """ """
@@ -177,3 +226,5 @@ class PhotoMerger:
         )
 
         self.copy_and_rename_images(image_rename_mapping=image_rename_mapping)
+
+        self._verify_merge()
