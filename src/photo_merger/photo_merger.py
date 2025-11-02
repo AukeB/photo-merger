@@ -3,7 +3,6 @@
 import re
 import shutil
 import logging
-import pillow_heif
 
 from tqdm import tqdm
 from pathlib import Path
@@ -12,7 +11,6 @@ from PIL import Image, ExifTags
 from src.photo_merger.config_manager import ConfigModel
 
 
-pillow_heif.register_heif_opener()
 Image.MAX_IMAGE_PIXELS = None
 logger = logging.getLogger(__name__)
 
