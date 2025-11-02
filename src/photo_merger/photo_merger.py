@@ -3,6 +3,7 @@
 import re
 import shutil
 import logging
+import pillow_heif
 
 from tqdm import tqdm
 from pathlib import Path
@@ -11,6 +12,7 @@ from PIL import Image, ExifTags
 from src.photo_merger.config_manager import ConfigModel
 
 
+pillow_heif.register_heif_opener()
 Image.MAX_IMAGE_PIXELS = None
 logger = logging.getLogger(__name__)
 
@@ -244,6 +246,9 @@ class PhotoMerger:
             if path.is_file() and path.suffix.lower() in self.allowed_image_extensions
         )
         logger.info(f"Total images in merged directory: {total_merged}")
+
+        difference = total_original - total_merged
+        logger.info(f"Difference between original and merge directory: {difference}")
 
         # Assert equality
         assert total_original == total_merged, (
