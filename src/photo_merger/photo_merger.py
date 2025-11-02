@@ -4,12 +4,14 @@ import re
 import shutil
 import logging
 
+from tqdm import tqdm
 from pathlib import Path
 from PIL import Image, ExifTags
 
 from src.photo_merger.config_manager import ConfigModel
 
 
+Image.MAX_IMAGE_PIXELS = None
 logger = logging.getLogger(__name__)
 
 
@@ -188,7 +190,12 @@ class PhotoMerger:
         """
         self.output_directory_path.mkdir(exist_ok=True)
 
-        for original_path, new_file_name in image_rename_mapping.items():
+        for original_path, new_file_name in tqdm(
+            image_rename_mapping.items(),
+            total=len(image_rename_mapping),
+            desc="Copying images",
+            unit=" image",
+        ):
             new_path = self.output_directory_path / new_file_name
             shutil.copy2(original_path, new_path)
 
@@ -242,7 +249,8 @@ class PhotoMerger:
         assert total_original == total_merged, (
             "❌ Mismatch between original and merged image counts"
         )
-        print("✅ Merge verification passed: all images copied successfully.")
+
+        logger.info("✅ Merge verification passed: all images copied successfully.")
 
     def merge(self) -> None:
         """ """
