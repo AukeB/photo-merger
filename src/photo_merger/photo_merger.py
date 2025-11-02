@@ -158,6 +158,7 @@ class PhotoMerger:
         """
         Copies images to the merged output folder using new filenames.
         """
+        self.output_directory_path.mkdir(exist_ok=True)
 
         for original_path, new_filename in image_rename_mapping.items():
             new_path = self.output_directory_path / new_filename
@@ -176,8 +177,6 @@ class PhotoMerger:
         Prints the number of images per subdirectory, total images in all subdirs,
         and the total number of images in the merged directory. Asserts equality.
         """
-        self.output_directory_path.mkdir(exist_ok=True)
-
         logger.info("=== Image count per subdirectory ===")
         total_original = 0
         for subdir in self.root_directory.rglob("*"):
