@@ -2,4 +2,4 @@
 
 from pathlib import Path
 
-CONFIG_PATH = Path("src/phto_merger/configs/config.yaml")
+CONFIG_PATH = Path("src/photo_merger/configs/config.yaml")
