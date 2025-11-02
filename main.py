@@ -21,11 +21,13 @@ def main():
 
     root_directory = Path("/home/auke_b/Downloads/2025-10-03 Canada/")
 
+    # Intialise photo merger.
     photo_merger = PhotoMerger(
         root_directory=root_directory,
         config=config
     )
 
+    # Execute main workflow.
     photo_merger.merge()
 
 
