@@ -108,29 +108,37 @@ def print_aggregated_sizes_table(
     aggregated_data: dict,
 ) -> None:
     """
-    Prints the aggregated file statistics in an aligned table format.
+    Prints the aggregated file statistics in an aligned table format,
+    including a total row computed and appended to the data.
     """
     headers = ["Subdirectory", "Extension", "Count", "Total Size (MB)", "Avg Size (MB)"]
-
     col_widths = [len(h) for h in headers]
 
-    # Precompute column widths based on content
+    total_count = 0
+    total_size = 0.0
+
     for subdir, file_types in aggregated_data.items():
         subdir_str = str(subdir)
         col_widths[0] = max(col_widths[0], len(subdir_str))
         for ext, info in file_types.items():
+            count = info["count"]
+            size = info["total_size_mb"]
+            avg_size = size / count if count > 0 else 0.0
+
+            total_count += count
+            total_size += size
+
             col_widths[1] = max(col_widths[1], len(ext))
-            col_widths[2] = max(col_widths[2], len(str(info["count"])))
-            col_widths[3] = max(col_widths[3], len(f"{info['total_size_mb']:.2f}"))
-            avg_size = (
-                info["total_size_mb"] / info["count"] if info["count"] > 0 else 0.0
-            )
+            col_widths[2] = max(col_widths[2], len(str(count)))
+            col_widths[3] = max(col_widths[3], len(f"{size:.2f}"))
             col_widths[4] = max(col_widths[4], len(f"{avg_size:.2f}"))
 
-    header_row = "  ".join(h.ljust(w) for h, w in zip(headers, col_widths))
+    aggregated_data["TOTAL"] = {
+        "-": {"count": total_count, "total_size_mb": total_size}
+    }
 
-    print("")
-    print(header_row)
+    header_row = "  ".join(h.ljust(w) for h, w in zip(headers, col_widths))
+    print("\n" + header_row)
     print("-" * len(header_row))
 
     for subdir, file_types in aggregated_data.items():
@@ -138,13 +146,14 @@ def print_aggregated_sizes_table(
         first_row = True
         for ext, info in file_types.items():
             count = info["count"]
-            total_size = info["total_size_mb"]
-            avg_size = total_size / count if count > 0 else 0.0
+            size = info["total_size_mb"]
+            avg_size = size / count if count > 0 else 0.0
+
             row = (
                 f"{subdir_str.ljust(col_widths[0]) if first_row else ' ' * col_widths[0]}  "
                 f"{ext.ljust(col_widths[1])}  "
                 f"{str(count).rjust(col_widths[2])}  "
-                f"{total_size:>{col_widths[3]}.2f}  "
+                f"{size:>{col_widths[3]}.2f}  "
                 f"{avg_size:>{col_widths[4]}.2f}"
             )
             print(row)
