@@ -1,5 +1,5 @@
 output_directory_name_suffix: "_merged"
-allowed_image_extensions:
+allowed_file_extensions:
   - ".jpg"
   - ".jpeg"
   - ".png"
@@ -7,3 +7,4 @@ allowed_image_extensions:
   - ".bmp"
   - ".tiff"
   - ".heic"
+  # - ".mp4"

@@ -34,3 +34,16 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+"""
+TODO
+
+- Overview file types and file size
+- Improved date(time) recogniztion from filename.
+- CLI Implementation
+
+
+
+"""

@@ -9,10 +9,10 @@ from src.photo_merger.config_manager import ConfigManager
 
 @pytest.fixture(scope="function", name="mock_yaml_content")
 def mock_yaml_config():
-    """Fixture that defines a mock config content for image extensions"""
+    """Fixture that defines a mock config content for file extensions"""
     yaml_content = """
         output_directory_name_suffix: "_suffix"
-        allowed_image_extensions:
+        allowed_file_extensions:
           - ".jpg"
           - ".jpeg"
           - ".png"

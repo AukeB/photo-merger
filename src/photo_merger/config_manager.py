@@ -19,7 +19,7 @@ class ConfiguredBaseModel(BaseModel):
 class ConfigModel(ConfiguredBaseModel):
     """Configuration model for photo-merger"""
 
-    allowed_image_extensions: list[str]
+    allowed_file_extensions: list[str]
     output_directory_name_suffix: str
 
 
