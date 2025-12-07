@@ -5,6 +5,7 @@ __pycache__/
 .ipynb_checkpoints/
 data/
 artifacts/
+_merged/
 
 # Virtual environments
 venv/
