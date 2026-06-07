@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def extract_metadata(file_path: Path) -> str | None:
-    """ """
+    """"""
     try:
         with Image.open(file_path) as img:
             exif_data = img.getexif()
@@ -44,7 +44,7 @@ def extract_metadata(file_path: Path) -> str | None:
 
 
 def extract_datetime_from_file_name(file_path: Path) -> str | None:
-    """ """
+    """"""
     pattern = r"(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})"
     match = re.search(pattern, file_path.name)
 
@@ -63,7 +63,7 @@ def obtain_file_sizes(
     megabyte_scaling_factor: int = 1024**2,
     rounding_number_of_decimals: int = 2,
 ) -> dict[Path, float]:
-    """ """
+    """"""
     file_size_mapping: dict[Path, float] = {}
 
     for file_path in file_paths:
@@ -86,7 +86,7 @@ def aggregate_sizes_by_subdir_and_extension(
     column_name_file_size: str = "total_size_mb",
     column_name_file_count: str = "count",
 ) -> dict[Path, dict[str, dict[str, float | int]]]:
-    """ """
+    """"""
     aggregation: DefaultDict = defaultdict(
         lambda: defaultdict(
             lambda: {column_name_file_size: 0.0, column_name_file_count: 0}
@@ -107,9 +107,8 @@ def aggregate_sizes_by_subdir_and_extension(
 def print_aggregated_sizes_table(
     aggregated_data: dict,
 ) -> None:
-    """
-    Prints the aggregated file statistics in an aligned table format,
-    including a total row computed and appended to the data.
+    """Prints the aggregated file statistics in an aligned table format, including a
+    total row computed and appended to the data.
     """
     headers = ["Subdirectory", "Extension", "Count", "Total Size (MB)", "Avg Size (MB)"]
     col_widths = [len(h) for h in headers]

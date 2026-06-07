@@ -24,11 +24,10 @@ register_heif_opener()
 
 
 class PhotoMerger:
-    """ """
+    """"""
 
     def __init__(self, root_directory: Path, config: ConfigModel) -> None:
-        """
-        Initializes the PhotoMerger with the given directory and configuration.
+        """Initializes the PhotoMerger with the given directory and configuration.
 
         Args:
             root_directory (Path): Path to the root directory containing subfolders.
@@ -42,7 +41,7 @@ class PhotoMerger:
         )
 
     def _obtain_file_paths(self) -> list[Path]:
-        """ """
+        """"""
         all_file_paths = [
             path
             for path in self.root_directory.rglob("*")
@@ -53,7 +52,7 @@ class PhotoMerger:
         return all_file_paths
 
     def _generate_new_file_names(self, file_paths: list[Path]) -> dict[Path, str]:
-        """ """
+        """"""
         file_renaming_mapping: dict[Path, str] = {}
 
         for file_path in file_paths:
@@ -90,12 +89,11 @@ class PhotoMerger:
     def _resolve_duplicate_output_file_names(
         self, file_renaming_mapping: dict[Path, str]
     ) -> dict[Path, str]:
-        """
-        Ensures all output filenames are unique by appending a counter to duplicates.
+        """Ensures all output filenames are unique by appending a counter to duplicates.
 
         Args:
-            file_renaming_mapping (dict[Path, str]): Mapping from original Path to proposed new
-                filename.
+            file_renaming_mapping (dict[Path, str]): Mapping from original Path to
+                proposed new filename.
 
         Returns:
             dict[Path, str]: Updated mapping with all filenames unique.
@@ -119,7 +117,7 @@ class PhotoMerger:
         self,
         file_paths: list[Path],
     ) -> None:
-        """ """
+        """"""
         file_sizes = obtain_file_sizes(file_paths=file_paths)
         aggregated_data = aggregate_sizes_by_subdir_and_extension(
             file_size_mapping=file_sizes, root_directory_path=self.root_directory
@@ -127,9 +125,7 @@ class PhotoMerger:
         print_aggregated_sizes_table(aggregated_data=aggregated_data)
 
     def _copy_and_rename_files(self, file_renaming_mapping: dict[Path, str]) -> None:
-        """
-        Copies files to the merged output folder using new filenames.
-        """
+        """Copies files to the merged output folder using new filenames."""
         self.output_directory_path.mkdir(exist_ok=True)
 
         for original_path, new_file_name in tqdm(
@@ -148,7 +144,7 @@ class PhotoMerger:
         )
 
     def _verify_merge(self) -> None:
-        """ """
+        """"""
         logger.info("=== File count per subdirectory ===")
         total_original = 0
         for subdir in self.root_directory.rglob("*"):
@@ -193,7 +189,7 @@ class PhotoMerger:
         logger.info("✅ Merge verification passed: all files copied successfully.")
 
     def merge(self) -> None:
-        """ """
+        """"""
         all_file_paths: list[Path] = self._obtain_file_paths()
 
         self._analyze_and_print_file_sizes(file_paths=all_file_paths)

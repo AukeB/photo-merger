@@ -15,11 +15,17 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "docstring-tailor>=0.2.0",
     "mypy>=1.18.2",
     "pytest>=8.4.2",
     "pytest-cov>=7.0.0",
     "ruff>=0.11.6",
 ]
+
+[tool.docstring_tailor]
+line-length = 88
+style = "google"
+detect-lists = true
 
 
 [[tool.mypy.overrides]]

@@ -7,6 +7,9 @@ ruff:
 	uv run ruff format $(PROJECT_NAME)
 	@echo "🔧 Successfully executed ruff."
 
+docstring:
+	uv run docstring_tailor
+
 # Type-check code with Mypy
 # --disallow-untyped-calls: Error when calling functions without type hints
 # --disallow-untyped-defs: Error on functions without type hints
@@ -56,6 +59,7 @@ git:
 # Run full workflow: format, type-check, test, clean, commit
 all:
 	make ruff
+	make docstring
 	make mypy
 	make pytest
 	make clean
