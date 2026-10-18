@@ -1,5 +1,5 @@
-# Module for storing project constants.
+"""Module for storing project constants."""
 
 from pathlib import Path
 
-CONFIG_PATH = Path("src/photo_merger/configs/config.yaml")
+CONFIG_PATH = Path(__file__).parent / "configs" / "config.yaml"

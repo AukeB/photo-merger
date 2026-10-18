@@ -1,41 +1,49 @@
-"""Module for loading the configuration files."""
+"""Module for loading and validating the photo-merger configuration file."""
+
+import logging
+from pathlib import Path
 
 import yaml
-import logging
 
-from pathlib import Path
-from pydantic import BaseModel, ConfigDict
-
-from src.photo_merger.constants import CONFIG_PATH
-
+from photo_merger.config_model import ConfigModel
+from photo_merger.constants import CONFIG_PATH
 
 logger = logging.getLogger(__name__)
 
 
-class ConfiguredBaseModel(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-
-class ConfigModel(ConfiguredBaseModel):
-    """Configuration model for photo-merger"""
-
-    allowed_file_extensions: list[str]
-    output_directory_name_suffix: str
-
-
 class ConfigManager:
-    """Handles loading and parsing the YAML configuration file."""
+    """Load and validate the config file into a ConfigModel.
 
-    def __init__(self, config_path: Path = CONFIG_PATH):
+    Attributes:
+        config_path (Path): Path to the YAML configuration file.
+
+    Example:
+        >>> config = ConfigManager().load_config_file()
+        >>> config.output_directory_name_suffix
+        '_merged'
+    """
+
+    def __init__(self, config_path: Path = CONFIG_PATH) -> None:
+        """Store the path to the config file for later reading.
+
+        Args:
+            config_path (Path): Path to the YAML configuration file.
+        """
+
         self.config_path = config_path
 
     def load_config_file(self) -> ConfigModel:
-        """Loads and validates the YAML config file into a ConfigModel."""
-        with open(self.config_path, "r", encoding="utf-8") as file:
-            config = yaml.safe_load(file)
+        """Read the YAML config file and validate it into a ConfigModel.
 
-        config_model = ConfigModel(**config)
+        Returns:
+            config (ConfigModel): The validated configuration.
+        """
+
+        with open(self.config_path, encoding="utf-8") as file:
+            raw_config = yaml.safe_load(file)
+
+        config = ConfigModel.model_validate(raw_config)
 
         logger.info("Successfully loaded configuration settings.")
 
-        return config_model
+        return config

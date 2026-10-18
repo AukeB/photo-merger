@@ -5,7 +5,6 @@ description = "Merge photos from multiple directories chronologically into a sin
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "logging>=0.4.9.6",
     "pillow>=12.0.0",
     "pillow-heif>=1.1.1",
     "pydantic>=2.12.3",
@@ -15,8 +14,8 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "deptry>=0.25.1",
     "docstring-tailor>=0.4.1",
-    "mypy>=1.18.2",
     "pyright>=1.1.414",
     "pytest>=8.4.2",
     "pytest-cov>=7.1.0",
@@ -24,18 +23,33 @@ dev = [
     "ty>=0.0.29",
 ]
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/photo_merger"]
+
+[tool.deptry]
+known_first_party = ["photo_merger"]
+
 [tool.docstring_tailor]
 line-length = 88
 style = "google"
 detect-lists = true
 
-
-[[tool.mypy.overrides]]
-module = ["yaml.*"]
-follow_untyped_imports = true
-
 [tool.pytest.ini_options]
 pythonpath = ["."]
 
+[tool.ruff.lint]
+select = [
+    "I",    # isort-style import sorting
+    "ANN",  # annotation rules
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["photo_merger"]
+
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["ANN"]  # tests are not held to annotation rules
+# Tests put two blank lines between imports and the section comments.
+"tests/**" = ["ANN", "I001"]
